@@ -64,3 +64,4 @@ class Tweet(models.Model):
     lang = models.CharField(max_length=255, null=True)
     good = models.IntegerField(max_length=11, null=True)
     bad = models.IntegerField(max_length=11, null=True)
+    user_id = models.CharField(max_length=255, null=True)
