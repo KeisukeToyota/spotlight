@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+<style>
+table {
+  margin-top: 10px;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+    <h3 class="page-header">管理ページ</h3>
+    <h4>
+        <a href="{% url 'spotlight_server:user_list' %}" class="btn btn-default btn-sm">登録者リスト</a>
+    </h4>
+{% endblock %}

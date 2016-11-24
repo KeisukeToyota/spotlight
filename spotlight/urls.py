@@ -17,6 +17,6 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^spotlight_server/', include('spotlight_server.urls')),
+    url(r'^spotlight_server/', include('spotlight_server.urls', namespace='spotlight_server')),
     url(r'^admin/', admin.site.urls),
 ]

@@ -9,8 +9,7 @@ from django.core import serializers
 
 
 def index(request):
-    return HttpResponse('hello')
-
+    return render(request, 'index.html')
 
 def report(request):
     inputs = json.loads((request.body).decode('utf-8'))
@@ -57,9 +56,9 @@ def report(request):
         return HttpResponse(True)
     else:
         tweet = Tweet.objects.get(id=inputs['id'])
-        if inputs['good'] == 1:
+        if inputs['safe'] is True:
             tweet.good += inputs['good']
-        elif inputs['bad'] == 1:
+        else:
             tweet.bad += inputs['bad']
         if tweet.good <= tweet.bad:
             user = User.objects.get(id=tweet.user_id)
@@ -72,22 +71,56 @@ def report(request):
 
 def user_confirmation(request):
     inputs = request.GET
-    print(len(serializers.serialize(
-        'json', Infomation.objects.filter(id=inputs.get('id')))))
     if len(serializers.serialize('json', Infomation.objects.filter(id=inputs.get('id')))) != 2:
         return HttpResponse(True)
     else:
         return HttpResponse(False)
 
-# def user_index(request):
+
+def version_check(request):
+    return json.dumps({'version': '0.2.1'})
 
 
-# def some_view(request):
-#     response = HttpResponse(content_type='text/csv')
-#     response['Content-Disposition'] = 'attachment; filename="somefilename.csv"'
-#
-#     writer = csv.writer(response)
-#     writer.writerow(['First row', 'Foo', 'Bar', 'Baz'])
-#     writer.writerow(['Second row', 'A', 'B', 'C', '"Testing"', "Here's a quote"])
-#
-#     return response
+def tweet_index(request):
+    inputs = request.GET
+    d = {
+        'tweets': Tweet.objects.filter(user_id=inputs.get('id')),
+    }
+    return render(request, 'tweet.html', d)
+
+
+def user_index(request):
+    d = {
+        'users': User.objects.all(),
+    }
+    return render(request, 'user.html', d)
+
+
+def user_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="user.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['ID',
+                     'Screen name',
+                     'Name',
+                     'Followers count',
+                     'Friends count',
+                     'Location',
+                     'Description',
+                     'Profile image',
+                     'Rank',
+                     'Created at'])
+    users = User.objects.all()
+    for user in users:
+        writer.writerow([user.id,
+                         user.screen_name,
+                         user.name,
+                         user.followers_count,
+                         user.friends_count,
+                         user.location,
+                         user.description,
+                         user.profile_image_url,
+                         user.rank,
+                         user.created_at])
+
+    return response

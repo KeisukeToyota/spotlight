@@ -5,7 +5,7 @@ from django.db import models
 
 class Report(models.Model):
     id = models.IntegerField(
-        primary_key=True, max_length=11, unique=True, auto_created=True)
+        primary_key=True, unique=True, auto_created=True)
     name = models.CharField(max_length=255, null=True)
     comment = models.TextField(null=True)
     os = models.CharField(max_length=255, null=True)
@@ -25,8 +25,6 @@ class Infomation(models.Model):
 
 
 class User(models.Model):
-    count = models.IntegerField(
-        primary_key=True, max_length=11, auto_created=True)
     created_at = models.CharField(max_length=255, null=True)
     default_profile = models.CharField(max_length=255, null=True)
     default_profile_image = models.CharField(max_length=255, null=True)
@@ -34,7 +32,7 @@ class User(models.Model):
     favorites_count = models.CharField(max_length=255, null=True)
     followers_count = models.CharField(max_length=255, null=True)
     friends_count = models.CharField(max_length=255, null=True)
-    id = models.CharField(max_length=255, null=True)
+    id = models.CharField(primary_key=True, max_length=255)
     lang = models.CharField(max_length=255, null=True)
     listed_count = models.CharField(max_length=255, null=True)
     location = models.TextField(null=True)
@@ -47,7 +45,7 @@ class User(models.Model):
     url = models.CharField(max_length=255, null=True)
     utc_offset = models.CharField(max_length=255, null=True)
     verified = models.CharField(max_length=255, null=True)
-    rank = models.IntegerField(max_length=11, null=True)
+    rank = models.IntegerField(null=True)
     hash = models.CharField(max_length=255, null=True)
 
 
@@ -62,6 +60,6 @@ class Tweet(models.Model):
     iso_language_code = models.CharField(max_length=255, null=True)
     source = models.CharField(max_length=255, null=True)
     lang = models.CharField(max_length=255, null=True)
-    good = models.IntegerField(max_length=11, null=True)
-    bad = models.IntegerField(max_length=11, null=True)
+    good = models.IntegerField(null=True)
+    bad = models.IntegerField(null=True)
     user_id = models.CharField(max_length=255, null=True)
