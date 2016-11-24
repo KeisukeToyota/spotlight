@@ -4,12 +4,15 @@ from .models import *
 import csv
 import json
 from django.core import serializers
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 # Create your views here.
 
 
 def index(request):
     return render(request, 'index.html')
+
 
 def report(request):
     inputs = json.loads((request.body).decode('utf-8'))
@@ -42,7 +45,8 @@ def report(request):
                         listed_count=inputs['listed_count'],
                         location=inputs['location'],
                         name=inputs['name'],
-                        profile_background_image_url=inputs['profile_background_image_url'],
+                        profile_background_image_url=inputs[
+                            'profile_background_image_url'],
                         profile_image_url=inputs['profile_image_url'],
                         screen_name=inputs['screen_name'],
                         statuses_count=inputs['statuses_count'],
@@ -83,15 +87,34 @@ def version_check(request):
 
 def tweet_index(request):
     inputs = request.GET
+    tweet_list = Tweet.objects.filter(user_id=inputs.get('id'))
+    paginator = Paginator(tweet_list, 25)
+    page = request.GET.get('page')
+    try:
+        tweets = paginator.page(page)
+    except PageNotAnInteger:
+        tweets = paginator.page(1)
+    except EmptyPage:
+        tweets = paginator.page(paginator.num_pages)
     d = {
-        'tweets': Tweet.objects.filter(user_id=inputs.get('id')),
+        'tweets': tweets,
+        'id': inputs.get('id')
     }
     return render(request, 'tweet.html', d)
 
 
 def user_index(request):
+    user_list = User.objects.all()
+    paginator = Paginator(user_list, 25)
+    page = request.GET.get('page')
+    try:
+        users = paginator.page(page)
+    except PageNotAnInteger:
+        users = paginator.page(1)
+    except EmptyPage:
+        users = paginator.page(paginator.num_pages)
     d = {
-        'users': User.objects.all(),
+        'users': users,
     }
     return render(request, 'user.html', d)
 
@@ -110,7 +133,15 @@ def user_csv(request):
                      'Profile image',
                      'Rank',
                      'Created at'])
-    users = User.objects.all()
+    user_list = User.objects.all()
+    paginator = Paginator(user_list, 25)
+    page = request.GET.get('page')
+    try:
+        users = paginator.page(page)
+    except PageNotAnInteger:
+        users = paginator.page(1)
+    except EmptyPage:
+        users = paginator.page(paginator.num_pages)
     for user in users:
         writer.writerow([user.id,
                          user.screen_name,
@@ -122,5 +153,38 @@ def user_csv(request):
                          user.profile_image_url,
                          user.rank,
                          user.created_at])
+
+    return response
+
+
+def tweet_csv(request):
+    inputs = request.GET
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="user.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['ID',
+                     'Retweet count',
+                     'Favorite count',
+                     'Text',
+                     'Created at',
+                     'Good',
+                     'Bad'])
+    tweet_list = Tweet.objects.filter(user_id=inputs.get('id'))
+    paginator = Paginator(tweet_list, 25)
+    page = request.GET.get('page')
+    try:
+        tweets = paginator.page(page)
+    except PageNotAnInteger:
+        tweets = paginator.page(1)
+    except EmptyPage:
+        tweets = paginator.page(paginator.num_pages)
+    for tweet in tweets:
+        writer.writerow([tweet.id,
+                         tweet.retweet_count,
+                         tweet.favorite_count,
+                         tweet.text,
+                         tweet.created_at,
+                         tweet.good,
+                         tweet.bad])
 
     return response

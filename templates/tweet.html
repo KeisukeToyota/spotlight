@@ -10,6 +10,7 @@ table {
 
 {% block body %}
     <h3 class="page-header">Tweet一覧</h3>
+    <h4> <a href="{% url 'spotlight_server:tweet_csv' %}" class="btn btn-default btn-sm">CSV</a></h4>
     <table class="table table-striped table-bordered">
       <thead>
         <tr>
@@ -37,4 +38,19 @@ table {
       </tbody>
     </table>
   </form>
+    <div class="pagination">
+        <span class="step-links">
+            {% if tweets.has_previous %}
+                <a href="?id={{ id }}&page={{ tweets.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ tweets.number }} of {{ tweets.paginator.num_pages }}.
+            </span>
+
+            {% if tweets.has_next %}
+                <a href="?id={{ id }}&page={{ tweets.next_page_number }}">next</a>
+            {% endif %}
+        </span>
+    </div>
 {% endblock %}
