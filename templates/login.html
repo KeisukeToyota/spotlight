@@ -1,0 +1,30 @@
+{% extends "admin/base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+<!-- ログイン失敗時には、ここでエラーメッセージを表示する -->
+{% if form.errors %}
+<p xmlns="http://www.w3.org/1999/html">なんかおかしいです</p>
+{% endif %}
+
+<form class="form-signin" method="post" action="{% url 'spotlight_server:index' %}">
+    {% csrf_token %}
+    <h2>Sign in</h2>
+
+    <hr />
+
+    <div class="form-group">
+        <label for="{{ form.username.id_for_label }}" class="sr-only">{{ form.username.label }}</label>
+        {% render_field form.username class="form-control" placeholder=form.username.label %}
+    </div>
+    <div class="form-group">
+        <label for="{{ form.password.id_for_label }}" class="sr-only">{{ form.password.label }}</label>
+        {% render_field form.password class="form-control" placeholder=form.password.label %}
+    </div>
+
+    <button type="submit" value="Sign in"> </button>
+</form>
+{% endblock %}
+
+
